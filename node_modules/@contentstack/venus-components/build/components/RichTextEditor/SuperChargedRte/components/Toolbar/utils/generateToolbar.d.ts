@@ -1,0 +1,1 @@
+export declare const generateToolbar: (elements: any, categoriesArray: any, DefaultComponent: any, DefaultMenuComponent: any, categories: any, contentStack: any, toolbarMode: any, toolbarType: any) => any[];

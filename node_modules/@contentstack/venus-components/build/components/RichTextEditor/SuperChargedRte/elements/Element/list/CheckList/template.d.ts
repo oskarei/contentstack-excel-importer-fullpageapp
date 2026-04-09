@@ -1,0 +1,2 @@
+declare const _default: "\n<div\n    {...props.attributes}\n    {...props.attrs}\n    className={props.className}\n    data-type='check-list'\n    data-checked={props.checked}\n>\n    <span\n    contentEditable='false'\n    className={props.styles['scrte--checklist-checkbox']}\n    >\n    <Checkbox\n        type=\"checkbox\"\n        checked={props.checked}\n        onChange={props.onToggle}\n    />\n    </span>\n    <span\n    className={props.cross}\n    >\n    {props.children}\n    </span>\n</div >\n";
+export default _default;

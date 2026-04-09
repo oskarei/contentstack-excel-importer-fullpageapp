@@ -33,17 +33,17 @@ By default Vite listens on **port 4322** and binds to all interfaces (`host: tru
 - **Fullpage app (the location you register in Developer Hub):** [http://localhost:4322/excel-importer](http://localhost:4322/excel-importer)
 - **OAuth callback (redirect URI):** [http://localhost:4322/oauth/callback](http://localhost:4322/oauth/callback)
 
-### 3. Expose localhost to Contentstack (required for real testing)
+### 3. Test with Contentstack while running locally
 
-Contentstack loads your app in the product UI from a URL it can reach. Plain `localhost` is not reachable from Contentstack’s servers, so you need a **public HTTPS URL** that tunnels to your machine.
+You can exercise the full app (SDK, OAuth callback route, Management SDK import) with **only** `npm run dev` and **no proxy or tunnel**. In Developer Hub, point the app’s hosting URL and locations at your machine, for example:
 
-Typical options:
+- **Hosting / development URL:** `http://localhost:4322`
+- **Fullpage location:** `http://localhost:4322/excel-importer`
+- **OAuth redirect URI (if used):** `http://localhost:4322/oauth/callback`
 
-- **Contentstack CLI** (if you use app development workflows):  
-  `contentstack app:serve` — follow the CLI docs for your version so the tunnel URL matches what you paste into Developer Hub.
-- **Another HTTPS tunnel** (ngrok, Cloudflare Tunnel, etc.): point it at `http://localhost:4322` and use the generated origin in Developer Hub (see below).
+Your browser loads the stack UI and the app iframe from `localhost` in the same session, so the setup is reachable end-to-end.
 
-Whenever your tunnel URL changes, update the app’s **Hosting URL** / location URLs and **OAuth redirect URIs** in Developer Hub.
+Use a **public HTTPS URL** (for example Contentstack Launch, or a tunnel such as ngrok) only when you need the app hosted somewhere other than your laptop—for teammates, CI, or production—not as a requirement for local testing.
 
 ### 4. Production-like build on your machine
 
@@ -58,21 +58,21 @@ Preview serves the contents of `dist/` (default Vite output). Use this to verify
 
 ## Install and configure the app in Developer Hub
 
-These steps assume you already have a **public base URL** for your app (tunnel in development, Launch or another host in production). Call that origin `https://your-app.example.com` below.
+Use a **local origin** while developing (for example `http://localhost:4322`) or a **deployed origin** for shared/production use (for example `https://your-app.example.com` from Launch). The steps are the same; only the base URL changes.
 
 ### 1. Create the app
 
 1. Log in to Contentstack and open **Developer Hub**.
 2. Create a **new app** (or open an existing one you use for this project).
-3. Set the app’s **hosting / development URL** to your public origin, e.g. `https://your-app.example.com` (no trailing path required if your locations use absolute paths).
+3. Set the app’s **hosting / development URL** to your app origin, e.g. `http://localhost:4322` locally or `https://your-app.example.com` when deployed (no trailing path required if your locations use absolute paths).
 
 ### 2. Add the Fullpage location
 
 1. Open your app → **UI Locations** (or equivalent).
 2. Add a **Fullpage** location.
 3. Set the path or URL so it loads the importer UI, for example:
-   - If the hosting root is your Vite app:  
-     **`https://your-app.example.com/excel-importer`**
+   - Local: **`http://localhost:4322/excel-importer`**
+   - Deployed: **`https://your-app.example.com/excel-importer`**
 4. Save.
 
 The app’s router only mounts the SDK-powered UI when the path contains **`/excel-importer`** (see `src/containers/App/App.tsx`).
@@ -82,9 +82,9 @@ The app’s router only mounts the SDK-powered UI when the path contains **`/exc
 If you use OAuth for this app:
 
 1. Open the app’s **OAuth** settings in Developer Hub.
-2. Add **Redirect / callback URL(s)** that match your deployment, for example:
-   - Development: `https://<your-tunnel-host>/oauth/callback`
-   - Production: `https://your-app.example.com/oauth/callback`
+2. Add **Redirect / callback URL(s)** that match where the app runs, for example:
+   - Local: `http://localhost:4322/oauth/callback`
+   - Deployed: `https://your-app.example.com/oauth/callback`
 3. Select the scopes your app needs (at minimum, align with what you do in code; entry creation here relies primarily on **App Permissions** — see next section).
 
 The repo includes a small **`/oauth/callback`** page that posts a message to `window.opener` and closes the window, consistent with common Contentstack app patterns.
@@ -179,7 +179,7 @@ Launch’s build image supports specific Node versions. If builds fail, check [S
 
 | Issue | What to check |
 | ----- | ------------- |
-| Blank app or SDK never ready | Public HTTPS URL, correct Fullpage path `/excel-importer`, no mixed content (HTTPS app URL). |
+| Blank app or SDK never ready | Correct Fullpage URL (e.g. `http://localhost:4322/excel-importer`), dev server running, path includes `/excel-importer`. |
 | **403** on import | App Permissions (`entries:write`, `content_types:read`), **reinstall** app on stack. |
 | OAuth window / token issues | Redirect URI exactly matches Developer Hub; user completed install consent. |
 | Import errors per row | Field UIDs on `susanna` match `title`, `text`, `description`; mandatory field rules in Contentstack. |
